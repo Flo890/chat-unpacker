@@ -1,24 +1,92 @@
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import { MessageSquare, User, Bot } from "lucide-react";
+import { MessageSquare, User, Bot, EyeOff } from "lucide-react";
 import { ChatMessage } from "@/pages/Index";
+import { toast } from "sonner";
 
 interface ChatViewerProps {
   chats: ChatMessage[];
   onToggleChat: (id: string) => void;
   onToggleAll: (selected: boolean) => void;
   applyMasking: (text: string) => string;
+  onAddMaskedWord: (word: string) => void;
 }
 
-export const ChatViewer = ({ chats, onToggleChat, onToggleAll, applyMasking }: ChatViewerProps) => {
+export const ChatViewer = ({ chats, onToggleChat, onToggleAll, applyMasking, onAddMaskedWord }: ChatViewerProps) => {
   const allSelected = chats.every(chat => chat.selected);
   const someSelected = chats.some(chat => chat.selected);
+  const [selectedText, setSelectedText] = useState("");
+  const [selectionPosition, setSelectionPosition] = useState<{ x: number; y: number } | null>(null);
+
+  useEffect(() => {
+    const handleSelection = () => {
+      const selection = window.getSelection();
+      const text = selection?.toString().trim();
+      
+      if (text && text.length > 0) {
+        const range = selection?.getRangeAt(0);
+        const rect = range?.getBoundingClientRect();
+        
+        if (rect) {
+          setSelectedText(text);
+          setSelectionPosition({
+            x: rect.left + rect.width / 2,
+            y: rect.top - 10
+          });
+        }
+      } else {
+        setSelectedText("");
+        setSelectionPosition(null);
+      }
+    };
+
+    document.addEventListener("mouseup", handleSelection);
+    document.addEventListener("selectionchange", handleSelection);
+
+    return () => {
+      document.removeEventListener("mouseup", handleSelection);
+      document.removeEventListener("selectionchange", handleSelection);
+    };
+  }, []);
+
+  const handleMaskSelection = () => {
+    if (selectedText) {
+      onAddMaskedWord(selectedText);
+      toast.success(`"${selectedText}" added to masked words`);
+      window.getSelection()?.removeAllRanges();
+      setSelectedText("");
+      setSelectionPosition(null);
+    }
+  };
 
   return (
-    <Card className="p-6">
+    <>
+      {/* Floating mask button */}
+      {selectedText && selectionPosition && (
+        <div
+          className="fixed z-50 animate-in fade-in zoom-in-95"
+          style={{
+            left: `${selectionPosition.x}px`,
+            top: `${selectionPosition.y}px`,
+            transform: 'translate(-50%, -100%)'
+          }}
+        >
+          <Button
+            size="sm"
+            onClick={handleMaskSelection}
+            className="shadow-lg"
+          >
+            <EyeOff className="mr-2 h-4 w-4" />
+            Mask "{selectedText.length > 20 ? selectedText.substring(0, 20) + '...' : selectedText}"
+          </Button>
+        </div>
+      )}
+
+      <Card className="p-6">
       <div className="mb-4 flex items-center justify-between">
         <h3 className="text-lg font-semibold text-foreground">Conversations</h3>
         <div className="flex gap-2">
@@ -82,7 +150,7 @@ export const ChatViewer = ({ chats, onToggleChat, onToggleAll, applyMasking }: C
                             {message.role}
                           </span>
                         </div>
-                        <p className="text-foreground line-clamp-2">
+                        <p className="text-foreground line-clamp-2 select-text cursor-text">
                           {applyMasking(message.content)}
                         </p>
                       </div>
@@ -100,5 +168,6 @@ export const ChatViewer = ({ chats, onToggleChat, onToggleAll, applyMasking }: C
         </div>
       </ScrollArea>
     </Card>
+    </>
   );
 };
