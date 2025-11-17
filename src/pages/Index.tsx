@@ -125,8 +125,8 @@ const Index = () => {
           <div className="flex items-center gap-3">
             <FileText className="h-8 w-8 text-primary" />
             <div>
-              <h1 className="text-2xl font-bold text-foreground">ChatGPT Export Viewer</h1>
-              <p className="text-sm text-muted-foreground">View, filter, and mask your chat history</p>
+              <h1 className="text-2xl font-bold text-foreground">ChatGPT Chat Submission</h1>
+              <p className="text-sm text-muted-foreground">View, filter, and anonymize your chat history for the data donation</p>
             </div>
           </div>
         </div>
@@ -162,13 +162,14 @@ const Index = () => {
                 />
               </div>
               
+              
               <div className="space-y-6">
                 <MaskingControls
                   maskedWords={maskedWords}
                   onAddWord={addMaskedWord}
                   onRemoveWord={removeMaskedWord}
                 />
-                
+              
                 <ExportControls 
                   chats={chats.filter(c => c.selected)}
                   applyMasking={applyMasking}

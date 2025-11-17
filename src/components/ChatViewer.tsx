@@ -122,6 +122,12 @@ export const ChatViewer = ({ chats, onToggleChat, onToggleAll, applyMasking, onA
         </div>
       </div>
 
+      <p className="mb-4 text-sm text-muted-foreground">
+        In the following, you can review the chats included in your history. Before submitting them to the researchers, please check whether there is any personal data that I identifies you (e.g., names) and mask them.
+        You can double click on a word and select "Mask" to hide all occurances of that word.
+        Please hide personal information such as names, phone numbers, email addresses (Hiding names of publicly known people, such as politicians, is not necessary) 
+      </p>      
+
       <ScrollArea className="h-[600px] pr-4">
         <div className="space-y-3">
           {chats.map((chat) => (

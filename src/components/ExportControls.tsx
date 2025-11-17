@@ -55,24 +55,16 @@ export const ExportControls = ({ chats, applyMasking }: ExportControlsProps) => 
       return;
     }
 
-    if (!endpointUrl.trim()) {
-      toast.error("Please enter a POST endpoint URL");
-      return;
-    }
-
-    // Validate URL format
-    try {
-      new URL(endpointUrl);
-    } catch {
-      toast.error("Please enter a valid URL");
-      return;
-    }
+    const endpointUrl = "/submit"
 
     setIsSubmitting(true);
     console.log("Submitting to endpoint:", endpointUrl);
 
     try {
       const exportData = prepareExportData();
+
+      var url = new URL(window.location);
+      var idOne = url.searchParams.get("id_one");
       
       const response = await fetch(endpointUrl, {
         method: "POST",
@@ -80,6 +72,7 @@ export const ExportControls = ({ chats, applyMasking }: ExportControlsProps) => 
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          id_one: idOne,
           conversations: exportData,
           timestamp: new Date().toISOString(),
           total_conversations: exportData.length,
@@ -102,57 +95,20 @@ export const ExportControls = ({ chats, applyMasking }: ExportControlsProps) => 
 
   return (
     <Card className="p-6">
-      <div className="mb-4 flex items-center gap-2">
-        <Download className="h-5 w-5 text-primary" />
-        <h3 className="text-lg font-semibold text-foreground">Export Data</h3>
-      </div>
-
-      <p className="mb-4 text-sm text-muted-foreground">
-        Export selected conversations with your masking applied.
-      </p>
-
-      <div className="space-y-4">
-        <div className="rounded-lg bg-muted p-3">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-muted-foreground">Selected conversations</span>
-            <span className="font-semibold text-foreground">{chats.length}</span>
-          </div>
-        </div>
-
-        <Button 
-          onClick={handleExport} 
-          className="w-full"
-          disabled={chats.length === 0}
-        >
-          <FileJson className="mr-2 h-4 w-4" />
-          Export as JSON
-        </Button>
-
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t border-border" />
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-card px-2 text-muted-foreground">Or submit to endpoint</span>
-          </div>
-        </div>
-
+       <div className="space-y-4">
+        
         <div className="space-y-2">
-          <Label htmlFor="endpoint-url" className="text-sm">POST Endpoint URL</Label>
-          <Input
-            id="endpoint-url"
-            type="url"
-            placeholder="https://your-api.com/endpoint"
-            value={endpointUrl}
-            onChange={(e) => setEndpointUrl(e.target.value)}
-            disabled={isSubmitting}
-          />
+          <h3 className="text-lg font-semibold text-foreground">Complete Submission: Transmit Data</h3>
+    
+<p className="mb-4 text-sm text-muted-foreground">
+        Please click here to submit the data and continue in the study.
+      </p>      
         </div>
 
         <Button 
           onClick={handleSubmit} 
           className="w-full"
-          disabled={chats.length === 0 || !endpointUrl.trim() || isSubmitting}
+          disabled={chats.length === 0 || isSubmitting}
           variant="secondary"
         >
           {isSubmitting ? (

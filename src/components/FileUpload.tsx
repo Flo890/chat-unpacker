@@ -26,7 +26,28 @@ export const FileUpload = ({ onFileUpload, isLoading }: FileUploadProps) => {
   });
 
   return (
+    <div>
+    <Card className="p-6">
+      <h3 className="text-lg font-semibold text-foreground">1. Go to ChatGPT to export your chat history</h3>
+      <p className="mb-4 text-sm">
+        Please go to your ChatGPT account, click on <i>Settings</i>, then <i>Data Controls</i>, and <i>Export Data</i>. Click on the <i>Export</i> button. 
+              This link directly brings you there: <a href="https://chatgpt.com/#settings/DataControls" target="_blank"><u>https://chatgpt.com/#settings/DataControls</u></a>
+              </p>   
+              
+      <h3 className="text-lg font-semibold text-foreground">2. Check your emails - download the file</h3>
+      <p className="mb-4 text-sm">
+        You will then receive an email. This isually happens immediately. You do not have to wait 24 hours. Click on the link in the email, to download your ChatGPT history file.
+      </p>   
+    <video src="expl_videos/chatgpt_instr_merged.mp4" width="50%" autoPlay muted loop></video>
+      <br/>
+      <h3 className="text-lg font-semibold text-foreground">3. Upload the downloaded ZIP file here</h3>
+      <p className="mb-4 text-sm">
+        Drag and drop or select the file that you have just downloaded from ChatGPT here:
+      </p>  
+   
+      </Card>
     <Card className="mx-auto max-w-2xl">
+      
       <div
         {...getRootProps()}
         className={`cursor-pointer rounded-lg border-2 border-dashed p-12 text-center transition-colors ${
@@ -71,5 +92,6 @@ export const FileUpload = ({ onFileUpload, isLoading }: FileUploadProps) => {
         </div>
       </div>
     </Card>
+    </div>
   );
 };
