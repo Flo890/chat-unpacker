@@ -158,6 +158,7 @@ const Index = () => {
                   onToggleChat={toggleChat}
                   onToggleAll={toggleAll}
                   applyMasking={applyMasking}
+                  onAddMaskedWord={addMaskedWord}
                 />
               </div>
               
