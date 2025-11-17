@@ -21,6 +21,7 @@ export const ChatViewer = ({ chats, onToggleChat, onToggleAll, applyMasking, onA
   const someSelected = chats.some(chat => chat.selected);
   const [selectedText, setSelectedText] = useState("");
   const [selectionPosition, setSelectionPosition] = useState<{ x: number; y: number } | null>(null);
+  const [expandedChats, setExpandedChats] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     const handleSelection = () => {
@@ -61,6 +62,18 @@ export const ChatViewer = ({ chats, onToggleChat, onToggleAll, applyMasking, onA
       setSelectedText("");
       setSelectionPosition(null);
     }
+  };
+
+  const toggleExpanded = (chatId: string) => {
+    setExpandedChats(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(chatId)) {
+        newSet.delete(chatId);
+      } else {
+        newSet.add(chatId);
+      }
+      return newSet;
+    });
   };
 
   return (
@@ -135,7 +148,7 @@ export const ChatViewer = ({ chats, onToggleChat, onToggleAll, applyMasking, onA
                   </div>
                   
                   <div className="space-y-2">
-                    {chat.messages.slice(0, 3).map((message, idx) => (
+                    {(expandedChats.has(chat.id) ? chat.messages : chat.messages.slice(0, 3)).map((message, idx) => (
                       <div
                         key={idx}
                         className="rounded-md border border-border bg-background p-3 text-sm"
@@ -156,9 +169,15 @@ export const ChatViewer = ({ chats, onToggleChat, onToggleAll, applyMasking, onA
                       </div>
                     ))}
                     {chat.messages.length > 3 && (
-                      <p className="text-xs text-muted-foreground">
-                        + {chat.messages.length - 3} more messages
-                      </p>
+                      <button
+                        onClick={() => toggleExpanded(chat.id)}
+                        className="text-xs text-primary hover:underline font-medium"
+                      >
+                        {expandedChats.has(chat.id) 
+                          ? "Show less" 
+                          : `+ ${chat.messages.length - 3} more messages`
+                        }
+                      </button>
                     )}
                   </div>
                 </div>
