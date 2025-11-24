@@ -83,7 +83,7 @@ const Index = () => {
       console.error('Error processing ZIP file:', error);
 
       const endpointUrl = "/submit"
-      var url = new URL(window.location);
+      var url = new URL(window.location.href);
       var idOne = url.searchParams.get("id_one");
       
       const response = await fetch(endpointUrl, {
