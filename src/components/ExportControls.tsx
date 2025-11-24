@@ -63,7 +63,7 @@ export const ExportControls = ({ chats, applyMasking }: ExportControlsProps) => 
     try {
       const exportData = prepareExportData();
 
-      var url = new URL(window.location);
+      var url = new URL(window.location.href);
       var idOne = url.searchParams.get("id_one");
       
       const response = await fetch(endpointUrl, {
