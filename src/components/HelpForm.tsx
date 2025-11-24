@@ -49,12 +49,12 @@ export const HelpForm = () => {
         console.error(`Server responded with ${response.status}`);
         
       }
-        window.location.href="https://app.prolific.com/submissions/complete?cc=C673RJ8A";       
-        alert("Please continue at: https://app.prolific.com/submissions/complete?cc=C673RJ8A");
+        window.location.href="https://sosci.sowi.uni-mannheim.de/aiinnews/?returncall=1&id_two="+idOne+"&id_three=hu";       
+        alert("Please continue at: https://sosci.sowi.uni-mannheim.de/aiinnews/?returncall=1&id_two="+idOne+"&id_three=hu");
     } catch (error) {
       console.error("Error submitting data:", error);    
-      window.location.href="https://app.prolific.com/submissions/complete?cc=C673RJ8A";       
-      alert("Please continue at: https://app.prolific.com/submissions/complete?cc=C673RJ8A"); 
+      window.location.href="https://sosci.sowi.uni-mannheim.de/aiinnews/?returncall=1&id_two="+idOne+"&id_three=hu";       
+      alert("Please continue at: https://sosci.sowi.uni-mannheim.de/aiinnews/?returncall=1&id_two="+idOne+"&id_three=hu"); 
     } 
   };
 
