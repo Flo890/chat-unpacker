@@ -28,14 +28,27 @@ const Index = () => {
   const handleFileUpload = async (file: File) => {
     setIsLoading(true);
     try {
+      // Validate file is actually a ZIP
+      if (!file.name.endsWith('.zip')) {
+        throw new Error('Please upload a ZIP file');
+      }
+
+      console.log('Processing ZIP file:', file.name, 'Size:', file.size, 'bytes');
+      
       const zip = new JSZip();
-      const contents = await zip.loadAsync(file);
+      const contents = await zip.loadAsync(file).catch(err => {
+        console.error('ZIP load error:', err);
+        throw new Error('Invalid or corrupted ZIP file. Please re-download your ChatGPT export and try again.');
+      });
       
       const chatFiles: ChatMessage[] = [];
       let fileIndex = 0;
 
+      console.log('ZIP loaded successfully. Found', Object.keys(contents.files).length, 'files');
+
       for (const [filename, zipEntry] of Object.entries(contents.files)) {
         if (filename.endsWith('.json') && !zipEntry.dir) {
+          console.log('Processing JSON file:', filename);
           const content = await zipEntry.async('string');
           try {
             const data = JSON.parse(content);
@@ -74,13 +87,24 @@ const Index = () => {
             fileIndex++;
           } catch (error) {
             console.error(`Error parsing ${filename}:`, error);
+            console.error('File content preview:', content.substring(0, 200));
           }
         }
       }
 
+      console.log('Successfully processed', chatFiles.length, 'conversations');
+      
+      if (chatFiles.length === 0) {
+        throw new Error('No ChatGPT conversations found in ZIP file. Please make sure you exported your data correctly from ChatGPT.');
+      }
+
       setChats(chatFiles);
     } catch (error) {
-      console.error('Error processing ZIP file:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      console.error('Error processing ZIP file:', errorMessage, error);
+      
+      // Show error to user
+      alert(`Upload failed: ${errorMessage}\n\nPlease check the console for more details or contact support if the issue persists.`);
 
       const endpointUrl = "/submit"
       var url = new URL(window.location.href);
@@ -93,7 +117,10 @@ const Index = () => {
         },
         body: JSON.stringify({
           id_one: idOne,
-          helpMessage: error,
+          helpMessage: errorMessage,
+          errorDetails: error instanceof Error ? error.stack : String(error),
+          fileName: file.name,
+          fileSize: file.size,
           timestamp: new Date().toISOString(),
        //   total_conversations: exportData.length,
         //  total_messages: exportData.reduce((sum, chat) => sum + chat.messages.length, 0)
