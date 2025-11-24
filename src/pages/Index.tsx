@@ -4,6 +4,7 @@ import { ChatViewer } from "@/components/ChatViewer";
 import { MaskingControls } from "@/components/MaskingControls";
 import { ExportControls } from "@/components/ExportControls";
 import { Button } from "@/components/ui/button";
+import { HelpForm } from "@/components/HelpForm";
 import { FileText } from "lucide-react";
 import JSZip from "jszip";
 
@@ -22,6 +23,7 @@ const Index = () => {
   const [chats, setChats] = useState<ChatMessage[]>([]);
   const [maskedWords, setMaskedWords] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isHelpVisible, setHelpvisible] = useState(false);
 
   const handleFileUpload = async (file: File) => {
     setIsLoading(true);
@@ -129,9 +131,12 @@ const Index = () => {
               <p className="text-sm text-muted-foreground">View, filter, and anonymize your chat history for the data donation</p>
             </div>
           </div>
+          <div className="helpbox" onClick={()=>{setHelpvisible(!isHelpVisible)}}><p>Help</p></div>
         </div>
       </header>
 
+      {isHelpVisible ? <HelpForm ></HelpForm> : <div></div>}
+   
       <main className="container mx-auto px-4 py-8">
         {chats.length === 0 ? (
           <FileUpload onFileUpload={handleFileUpload} isLoading={isLoading} />

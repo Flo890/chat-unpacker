@@ -103,3 +103,20 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
   }
 }
+
+.helpbox{
+  position:absolute;
+  right:20px;
+  top:20px;
+}
+.helpbox p{
+  width:100px;
+  font-weight:bold;
+  color:grey;
+}
+.helpbox p:hover{
+  color:black;
+}
+.helpCard{
+  background-color: lightblue;
+}

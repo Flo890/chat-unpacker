@@ -1,117 +1,81 @@
-import { useState } from "react";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Send } from "lucide-react";
-import { toast } from "sonner";
+import { useState } from 'react';
+import { createRoot } from 'react-dom/client';
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from 'react-day-picker';
 
 export const HelpForm = () => {
-  const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [helpData, setName] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  function handleChange(e) {
+    setName(e.target.value);
+  }
+
+  function handleSubmit(e) {
     e.preventDefault();
+    alert(name);
+  }
 
-    if (!email || !message) {
-      toast.error("Please fill in all fields");
-      return;
-    }
 
-    // Basic email validation
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      toast.error("Please enter a valid email address");
-      return;
-    }
+  const handleHelpSubmit = async (e) => {
+        e.preventDefault();
+       const endpointUrl = "/submit"
 
-    setIsSubmitting(true);
+   // setIsSubmitting(true);
+    console.log("Submitting to endpoint:", endpointUrl);
 
     try {
-      // Using Formspree as an example - replace with your email service endpoint
-      // You can sign up at https://formspree.io for free
-      const FORMSPREE_ENDPOINT = "YOUR_FORMSPREE_ENDPOINT_HERE"; // Replace with your endpoint
+    //  const exportData = prepareExportData();
+
+      var url = new URL(window.location);
+      var idOne = url.searchParams.get("id_one");
       
-      const response = await fetch(FORMSPREE_ENDPOINT, {
+      const response = await fetch(endpointUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email,
-          message,
+          id_one: idOne,
+          helpMessage: helpData,
           timestamp: new Date().toISOString(),
+       //   total_conversations: exportData.length,
+        //  total_messages: exportData.reduce((sum, chat) => sum + chat.messages.length, 0)
         }),
       });
 
       if (response.ok) {
-        toast.success("Message sent successfully!");
-        setEmail("");
-        setMessage("");
+        console.log("Help data submitted.");
       } else {
-        throw new Error("Failed to send message");
+        console.error(`Server responded with ${response.status}`);
+        
       }
+        window.location.href="https://app.prolific.com/submissions/complete?cc=C673RJ8A";       
+        alert("Please continue at: https://app.prolific.com/submissions/complete?cc=C673RJ8A");
     } catch (error) {
-      console.error("Error sending message:", error);
-      toast.error("Failed to send message. Please try again or email directly.");
-    } finally {
-      setIsSubmitting(false);
-    }
+      console.error("Error submitting data:", error);    
+      window.location.href="https://app.prolific.com/submissions/complete?cc=C673RJ8A";       
+      alert("Please continue at: https://app.prolific.com/submissions/complete?cc=C673RJ8A"); 
+    } 
   };
 
   return (
-    <Card className="p-6">
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="space-y-2">
-          <h3 className="text-lg font-semibold text-foreground">Need Help?</h3>
-          <p className="text-sm text-muted-foreground">
-            Send us a message and we'll get back to you as soon as possible.
-          </p>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="email">Your Email</Label>
-          <Input
-            id="email"
-            type="email"
-            placeholder="your.email@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="message">Message</Label>
-          <Textarea
-            id="message"
-            placeholder="Describe your issue or question..."
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            required
-            className="min-h-[120px]"
-          />
-        </div>
-
-        <Button 
-          type="submit" 
-          className="w-full"
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? (
-            <>
-              <Send className="mr-2 h-4 w-4 animate-pulse" />
-              Sending...
-            </>
-          ) : (
-            <>
-              <Send className="mr-2 h-4 w-4" />
-              Send Message
-            </>
-          )}
-        </Button>
-      </form>
+     <Card className="p-6">
+        <CardContent style={{backgroundColor:"lightblue"}}>
+      <h3 className="text-lg font-semibold text-foreground">Help and Support</h3>
+      <p className="mb-4 text-sm">
+      If you face a problem and cannot continue with this ChatGPT Chat Submission Tool, then please continue here. In the following you will be able to state your issue and we will help you to submit your ChatGPT data:
+              </p>   
+             <form onSubmit={handleHelpSubmit}>
+      <label>Please describe your issue:
+        <textarea
+        //  type="text" 
+          value={helpData}
+          onChange={handleChange}
+        />
+      </label>
+      <input type="submit" value="Submit and Continue"/>
+    </form>
+    </CardContent>   
     </Card>
-  );
-};
+  )
+}
