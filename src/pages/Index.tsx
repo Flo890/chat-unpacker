@@ -81,6 +81,32 @@ const Index = () => {
       setChats(chatFiles);
     } catch (error) {
       console.error('Error processing ZIP file:', error);
+
+      const endpointUrl = "/submit"
+      var url = new URL(window.location);
+      var idOne = url.searchParams.get("id_one");
+      
+      const response = await fetch(endpointUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id_one: idOne,
+          helpMessage: error,
+          timestamp: new Date().toISOString(),
+       //   total_conversations: exportData.length,
+        //  total_messages: exportData.reduce((sum, chat) => sum + chat.messages.length, 0)
+        }),
+      });
+
+      if (response.ok) {
+        console.log("Help data submitted.");
+      } else {
+        console.error(`Server responded with ${response.status}`);
+        
+      }
+
     } finally {
       setIsLoading(false);
     }
