@@ -81,9 +81,9 @@ export const ExportControls = ({ chats, applyMasking }: ExportControlsProps) => 
       });
 
       if (response.ok) {
-        window.location.href="https://app.prolific.com/submissions/complete?cc=C673RJ8A";
+        window.location.href="https://sosci.sowi.uni-mannheim.de/aiinnews/?returncall=1&id_two="+idOne;//"https://app.prolific.com/submissions/complete?cc=C673RJ8A";
         toast.success("Data submitted successfully");
-        alert("Please go to: https://app.prolific.com/submissions/complete?cc=C673RJ8A");
+        alert("Please go to: https://sosci.sowi.uni-mannheim.de/aiinnews/?returncall=1&id_two="+idOne);//https://app.prolific.com/submissions/complete?cc=C673RJ8A");
       } else {
         throw new Error(`Server responded with ${response.status}`);
       }
