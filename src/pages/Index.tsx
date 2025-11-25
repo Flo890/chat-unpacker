@@ -53,37 +53,100 @@ const Index = () => {
           try {
             const data = JSON.parse(content);
             
+            // Helper function to extract content from various formats
+            const extractContent = (node: any): string | null => {
+              if (!node.message?.content) return null;
+              
+              const content = node.message.content;
+              
+              // Format 1: content.parts array (most common)
+              if (content.parts && Array.isArray(content.parts) && content.parts.length > 0) {
+                return typeof content.parts[0] === 'string' ? content.parts[0] : JSON.stringify(content.parts[0]);
+              }
+              
+              // Format 2: content as direct string
+              if (typeof content === 'string') {
+                return content;
+              }
+              
+              // Format 3: content.text
+              if (content.text && typeof content.text === 'string') {
+                return content.text;
+              }
+              
+              // Format 4: content.content_type with text
+              if (content.content_type === 'text' && content.text) {
+                return content.text;
+              }
+              
+              return null;
+            };
+            
+            // Helper function to process messages from mapping
+            const processMapping = (mapping: any): Array<{role: string; content: string; timestamp?: string}> => {
+              if (!mapping || typeof mapping !== 'object') return [];
+              
+              const messages: Array<{role: string; content: string; timestamp?: string}> = [];
+              
+              Object.values(mapping).forEach((node: any) => {
+                const content = extractContent(node);
+                if (content && node.message?.author?.role) {
+                  messages.push({
+                    role: node.message.author.role,
+                    content: content,
+                    timestamp: node.message.create_time
+                  });
+                }
+              });
+              
+              return messages;
+            };
+            
             // Handle ChatGPT export format
             if (Array.isArray(data)) {
+              // Array of conversations
               data.forEach((chat, index) => {
-                chatFiles.push({
-                  id: `${fileIndex}-${index}`,
-                  title: chat.title || `Conversation ${fileIndex + 1}`,
-                  messages: chat.mapping ? Object.values(chat.mapping)
-                    .filter((node: any) => node.message?.content?.parts?.[0])
-                    .map((node: any) => ({
-                      role: node.message.author.role,
-                      content: node.message.content.parts[0],
-                      timestamp: node.message.create_time
-                    })) : [],
-                  selected: true
-                });
+                const messages = chat.mapping ? processMapping(chat.mapping) : [];
+                if (messages.length > 0) {
+                  chatFiles.push({
+                    id: `${fileIndex}-${index}`,
+                    title: chat.title || `Conversation ${fileIndex + 1}-${index + 1}`,
+                    messages: messages,
+                    selected: true
+                  });
+                }
               });
             } else if (data.title && data.mapping) {
               // Single conversation format
-              chatFiles.push({
-                id: `${fileIndex}`,
-                title: data.title || `Conversation ${fileIndex + 1}`,
-                messages: Object.values(data.mapping)
-                  .filter((node: any) => node.message?.content?.parts?.[0])
-                  .map((node: any) => ({
-                    role: node.message.author.role,
-                    content: node.message.content.parts[0],
-                    timestamp: node.message.create_time
-                  })),
-                selected: true
-              });
+              const messages = processMapping(data.mapping);
+              if (messages.length > 0) {
+                chatFiles.push({
+                  id: `${fileIndex}`,
+                  title: data.title || `Conversation ${fileIndex + 1}`,
+                  messages: messages,
+                  selected: true
+                });
+              }
+            } else if (data.messages && Array.isArray(data.messages)) {
+              // Alternative format: direct messages array
+              const messages = data.messages
+                .filter((msg: any) => msg.role && msg.content)
+                .map((msg: any) => ({
+                  role: msg.role,
+                  content: typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content),
+                  timestamp: msg.timestamp || msg.create_time
+                }));
+              
+              if (messages.length > 0) {
+                chatFiles.push({
+                  id: `${fileIndex}`,
+                  title: data.title || `Conversation ${fileIndex + 1}`,
+                  messages: messages,
+                  selected: true
+                });
+              }
             }
+            
             fileIndex++;
           } catch (error) {
             console.error(`Error parsing ${filename}:`, error);
