@@ -111,14 +111,6 @@ export const ChatViewer = ({ chats, onToggleChat, onToggleAll, applyMasking, onA
           >
             Select All
           </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => onToggleAll(false)}
-            disabled={!someSelected}
-          >
-            Deselect All
-          </Button>
         </div>
       </div>
 
