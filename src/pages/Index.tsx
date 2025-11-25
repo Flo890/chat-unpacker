@@ -293,6 +293,7 @@ const Index = () => {
               
                 <ExportControls 
                   chats={chats.filter(c => c.selected)}
+                  allChatLength={chats.length}
                   applyMasking={applyMasking}
                 />
               </div>

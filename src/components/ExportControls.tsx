@@ -10,9 +10,10 @@ import { toast } from "sonner";
 interface ExportControlsProps {
   chats: ChatMessage[];
   applyMasking: (text: string) => string;
+  allChatLength: number;
 }
 
-export const ExportControls = ({ chats, applyMasking }: ExportControlsProps) => {
+export const ExportControls = ({ chats, applyMasking, allChatLength }: ExportControlsProps) => {
   const [endpointUrl, setEndpointUrl] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const prepareExportData = () => {
@@ -25,6 +26,9 @@ export const ExportControls = ({ chats, applyMasking }: ExportControlsProps) => 
       }))
     }));
   };
+  const getAllChatLength = () => {
+    return allChatLength;
+  }
 
   const handleExport = () => {
     if (chats.length === 0) {
@@ -76,7 +80,8 @@ export const ExportControls = ({ chats, applyMasking }: ExportControlsProps) => 
           conversations: exportData,
           timestamp: new Date().toISOString(),
           total_conversations: exportData.length,
-          total_messages: exportData.reduce((sum, chat) => sum + chat.messages.length, 0)
+          total_messages: exportData.reduce((sum, chat) => sum + chat.messages.length, 0),
+          all_chat_length: getAllChatLength()
         }),
       });
 
