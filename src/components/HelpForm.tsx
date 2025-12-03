@@ -81,6 +81,7 @@ export const HelpForm = () => {
       <p className="mb-4 text-sm">
       If you face a problem and cannot continue with this ChatGPT Chat Submission Tool, then please continue here. In the following you will be able to state your issue and we will help you to submit your ChatGPT data:
               </p>   
+              <p>If you still did not receive your ChatGPT export data: Please briefly state it below, save this page's url   {window.location.href}  , submit the form, and come back to this page as soon as you receive it. Thank you for your contribution!</p>
              <form onSubmit={handleHelpSubmit}>
       <label>Please describe your issue:
         <textarea
