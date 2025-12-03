@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Download, FileJson, Send } from "lucide-react";
 import { ChatMessage } from "@/pages/Index";
 import { toast } from "sonner";
+import { getProlificReturnCode } from "@/vars";
 
 interface ExportControlsProps {
   chats: ChatMessage[];
@@ -85,10 +86,16 @@ export const ExportControls = ({ chats, applyMasking, allChatLength }: ExportCon
         }),
       });
 
+      const questionnaireAnswered = url.searchParams.get("q")=="f";
+
+      const targetUrl = questionnaireAnswered ?
+       "https://app.prolific.com/submissions/complete?cc="+getProlificReturnCode() :
+        "https://sosci.sowi.uni-mannheim.de/aiinnews/?returncall=1&id_two="+idOne;
+
       if (response.ok) {
-        window.location.href="https://sosci.sowi.uni-mannheim.de/aiinnews/?returncall=1&id_two="+idOne;//"https://app.prolific.com/submissions/complete?cc=C673RJ8A";
+        window.location.href=targetUrl;
         toast.success("Data submitted successfully");
-        alert("Please go to: https://sosci.sowi.uni-mannheim.de/aiinnews/?returncall=1&id_two="+idOne);//https://app.prolific.com/submissions/complete?cc=C673RJ8A");
+        alert("Please go to: "+targetUrl);
       } else {
         throw new Error(`Server responded with ${response.status}`);
       }

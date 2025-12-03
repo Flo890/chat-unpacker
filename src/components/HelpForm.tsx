@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from 'react-day-picker';
+import { getProlificReturnCode } from '@/vars';
 
 export const HelpForm = () => {
   const [helpData, setName] = useState("");
@@ -23,11 +24,20 @@ export const HelpForm = () => {
    // setIsSubmitting(true);
     console.log("Submitting to endpoint:", endpointUrl);
 
+    var url = new URL(window.location.href);
+    var idOne = url.searchParams.get("id_one");
+
+    const questionnaireAnswered = url.searchParams.get("q")=="f";
+
+    const targetUrl = questionnaireAnswered ?
+       "https://app.prolific.com/submissions/complete?cc="+getProlificReturnCode() :
+        "https://sosci.sowi.uni-mannheim.de/aiinnews/?returncall=1&id_two="+idOne+"&id_three=hu"
+
     try {
     //  const exportData = prepareExportData();
 
-      var url = new URL(window.location.href);
-      var idOne = url.searchParams.get("id_one");
+      
+     
       
       const response = await fetch(endpointUrl, {
         method: "POST",
@@ -49,12 +59,18 @@ export const HelpForm = () => {
         console.error(`Server responded with ${response.status}`);
         
       }
-        window.location.href="https://sosci.sowi.uni-mannheim.de/aiinnews/?returncall=1&id_two="+idOne+"&id_three=hu";       
-        alert("Please continue at: https://sosci.sowi.uni-mannheim.de/aiinnews/?returncall=1&id_two="+idOne+"&id_three=hu");
+
+
+
+
+
+
+        window.location.href=targetUrl;       
+        alert("Please continue at: "+targetUrl);
     } catch (error) {
       console.error("Error submitting data:", error);    
-      window.location.href="https://sosci.sowi.uni-mannheim.de/aiinnews/?returncall=1&id_two="+idOne+"&id_three=hu";       
-      alert("Please continue at: https://sosci.sowi.uni-mannheim.de/aiinnews/?returncall=1&id_two="+idOne+"&id_three=hu"); 
+      window.location.href=targetUrl;       
+      alert("Please continue at: "+targetUrl); 
     } 
   };
 
