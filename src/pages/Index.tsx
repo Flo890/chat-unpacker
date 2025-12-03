@@ -255,7 +255,12 @@ const Index = () => {
    
       <main className="container mx-auto px-4 py-8">
         {chats.length === 0 ? (
+          <div>
           <FileUpload onFileUpload={handleFileUpload} isLoading={isLoading} />
+          <div className="flex flex-col items-center">
+            <Button variant="ghost" onClick={()=>{setHelpvisible(!isHelpVisible)}}>I did not receive my ChatGPT export file yet</Button>
+          </div>
+        </div>          
         ) : (
           <div className="space-y-6">
             <div className="flex items-center justify-between">
@@ -269,7 +274,7 @@ const Index = () => {
               </div>
               <Button variant="outline" onClick={reset}>
                 Load Different File
-              </Button>
+              </Button> 
             </div>
 
             <div className="grid gap-6 lg:grid-cols-3">
